@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
+import 'fillcylinders.dart';
+
 class Scanner extends StatefulWidget {
   const Scanner({super.key});
 
@@ -12,6 +14,7 @@ class Scanner extends StatefulWidget {
 class _ScannerState extends State<Scanner> {
   final qrKey = GlobalKey(debugLabel: 'QR');
   Barcode? barcode;
+  List qrList = [];
 
   QRViewController? controller;
   @override
@@ -47,7 +50,14 @@ class _ScannerState extends State<Scanner> {
           children: [
             ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  try {
+                    setState(() {
+                      if (!qrList.contains('${barcode!.code}') &&
+                          {barcode!.code} != null) {
+                        qrList.add('${barcode!.code}');
+                      }
+                    });
+                  } catch (e) {}
                 },
                 child: const Text('add'))
           ],
@@ -77,47 +87,59 @@ class _ScannerState extends State<Scanner> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(backgroundColor: Colors.white,
-          title: const Text('Scan Cylinders',style: TextStyle(color: Colors.black)),
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          title: const Text('Scan Cylinders',
+              style: TextStyle(color: Colors.black)),
           automaticallyImplyLeading: false,
           leading: IconButton(
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => FillCylinders(
+                            qrList: qrList,
+                          )));
             },
             icon: const Icon(Icons.arrow_back_rounded),
             color: Colors.black,
           ),
-          actions:[IconButton(color: const Color.fromARGB(255, 236, 215, 19),
+          actions: [
+            IconButton(
+              color: const Color.fromARGB(255, 236, 215, 19),
               icon: FutureBuilder<bool?>(
-      future: controller?.getFlashStatus(),
-      builder: (context, snapshot) {if (snapshot.data!=null)
-      {return Icon(snapshot.data!? Icons.flash_on_rounded:Icons.flash_off_rounded);}
-      else{return Container();}}
-     ),
-     onPressed: () async {
-      await controller?.toggleFlash();
-      setState(() {});
-    },
-  ),
-IconButton(
-  color: Colors.black,
-              icon:FutureBuilder(
-      future: controller?.getCameraInfo(),
-      builder: (context, snapshot) {
-        if (snapshot.data!=null){
-          return const Icon(Icons.switch_camera_rounded);
-          }
-      else{
-        return Container();}}
-     
-    ) ,
+                  future: controller?.getFlashStatus(),
+                  builder: (context, snapshot) {
+                    if (snapshot.data != null) {
+                      return Icon(snapshot.data!
+                          ? Icons.flash_on_rounded
+                          : Icons.flash_off_rounded);
+                    } else {
+                      return Container();
+                    }
+                  }),
+              onPressed: () async {
+                await controller?.toggleFlash();
+                setState(() {});
+              },
+            ),
+            IconButton(
+              color: Colors.black,
+              icon: FutureBuilder(
+                  future: controller?.getCameraInfo(),
+                  builder: (context, snapshot) {
+                    if (snapshot.data != null) {
+                      return const Icon(Icons.switch_camera_rounded);
+                    } else {
+                      return Container();
+                    }
+                  }),
               onPressed: () async {
                 await controller?.flipCamera();
                 setState(() {});
               },
-              
             )
-] ,
+          ],
         ),
         body: Container(
           width: double.infinity,

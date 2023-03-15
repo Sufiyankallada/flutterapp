@@ -31,7 +31,9 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
           IconButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pop(context);
+              },
               icon: const Icon(
                 Icons.power_settings_new,
                 color: Colors.redAccent,
@@ -48,7 +50,9 @@ class _HomePageState extends State<HomePage> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const FillCylinders()));
+                      builder: (context) => FillCylinders(
+                            qrList: [],
+                          )));
             },
             style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.resolveWith((states) {

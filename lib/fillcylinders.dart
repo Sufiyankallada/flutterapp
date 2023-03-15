@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:oru_app/scanner.dart';
 
 class FillCylinders extends StatefulWidget {
-  const FillCylinders({super.key});
+  List qrList;
+
+  FillCylinders({Key? mykey, required this.qrList}) : super(key: mykey);
 
   @override
   State<FillCylinders> createState() => _FillCylindersState();
@@ -32,20 +34,52 @@ class _FillCylindersState extends State<FillCylinders> {
           ),
         ),
       ),
-      body: Row(mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            IconButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const Scanner()));
-                },
-                icon: const Icon(Icons.qr_code_scanner, size: 50,),alignment: Alignment.topRight),
-          ],
-        ),
-      
+      body: ListView(
+        padding: EdgeInsets.all(15),
+        children: [
+          IconButton(
+              onPressed: () {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => const Scanner()));
+              },
+              icon: const Icon(
+                Icons.qr_code_scanner,
+                size: 50,
+              ),
+              alignment: Alignment.topCenter),
+
+          SizedBox(
+            height: 30,
+          ),
+          // Text("${widget.qrList[0]}")
+          ListView.builder(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              itemCount: widget.qrList.length,
+              itemBuilder: (context, index) {
+                return Column(
+                  children: [
+                    ListTile(
+                      title: Text(widget.qrList[index]),
+                      subtitle: Text((index + 1).toString()),
+                      tileColor: Colors.grey[350],
+                    ),
+                    SizedBox(
+                      height: 10,
+                    )
+                  ],
+                );
+              }),
+          ElevatedButton(
+            onPressed: () {
+              setState(() {
+                widget.qrList.clear();
+              });
+            },
+            child: Text("Submit"),
+          )
+        ],
+      ),
     );
   }
 }
