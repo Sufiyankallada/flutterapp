@@ -22,7 +22,6 @@ class _LoginPageState extends State<LoginPage> {
           title: Text("Login", style: TextStyle(color: Colors.black)),
           centerTitle: true,
         ),
-        backgroundColor: Colors.grey[600],
         body: SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(10, 200, 10, 0),
           child: Column(
@@ -39,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
               reusableTextField(
                 "Password",
                 Icons.lock_outline,
-                false,
+                true,
                 password,
               ),
               const SizedBox(
@@ -47,9 +46,9 @@ class _LoginPageState extends State<LoginPage> {
               ),
               signInSignUpButton("Login", context, () {
                 postRequest();
-                print('aaaaaaaaaaaaaaaa');
-                print(password.text);
-                print("bbbbbbbbbbbbb");
+                // print('aaaaaaaaaaaaaaaa');
+                // print(password.text);
+                // print("bbbbbbbbbbbbb");
               }),
               // ElevatedButton(
               //     onPressed: () {

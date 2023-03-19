@@ -1,4 +1,6 @@
+
 import 'package:flutter/material.dart';
+import 'package:oru_app/fillcylinder_mannually.dart';
 import 'package:oru_app/scanner.dart';
 
 class FillCylinders extends StatefulWidget {
@@ -35,7 +37,7 @@ class _FillCylindersState extends State<FillCylinders> {
         ),
       ),
       body: ListView(
-        padding: EdgeInsets.all(15),
+        padding: EdgeInsets.all(20),
         children: [
           IconButton(
               onPressed: () {
@@ -64,7 +66,7 @@ class _FillCylindersState extends State<FillCylinders> {
                       subtitle: Text((index + 1).toString()),
                       tileColor: Colors.grey[350],
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 10,
                     )
                   ],
@@ -76,7 +78,30 @@ class _FillCylindersState extends State<FillCylinders> {
                 widget.qrList.clear();
               });
             },
-            child: Text("Submit"),
+            child: const Text(
+              "Submit",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          SizedBox(
+            height: 20,
+          ),
+
+          Card(
+            elevation: 4,
+            child: ListTile(
+              title: Text("Manual Entries"),
+              leading: Icon(
+                Icons.add,
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => FillMannually()),
+                );
+              },
+              tileColor: Colors.grey[300],
+            ),
           )
         ],
       ),

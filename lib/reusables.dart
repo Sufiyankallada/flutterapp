@@ -7,21 +7,21 @@ TextField reusableTextField(String text, IconData icon, bool isPassword,
     obscureText: isPassword,
     enableSuggestions: !isPassword,
     autocorrect: !isPassword,
-    cursorColor: Colors.white,
-    style: TextStyle(color: Colors.white.withOpacity(0.9)),
+    cursorColor: Colors.black,
+    style: TextStyle(color: Colors.black.withOpacity(0.9)),
     decoration: InputDecoration(
       prefixIcon: Icon(
         icon,
-        color: Colors.white70,
+        color: Colors.black87,
       ),
       hintText: text,
       labelText: text,
       labelStyle: TextStyle(
-        color: Colors.white.withOpacity(0.9),
+        color: Colors.black.withOpacity(0.9),
       ),
       filled: true,
       floatingLabelBehavior: FloatingLabelBehavior.never,
-      fillColor: Colors.white.withOpacity(0.3),
+      fillColor: Colors.grey.withOpacity(0.3),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(30),
         borderSide: const BorderSide(width: 0, style: BorderStyle.none),
@@ -101,6 +101,33 @@ Container buttons(BuildContext context, String text, Function onTap) {
           fontSize: 16,
         ),
       ),
+    ),
+  );
+}
+
+Container Kbutton(String text, Function onTap()) {
+  return Container(
+    color: Colors.white,
+    width: double.infinity,
+    padding: const EdgeInsets.fromLTRB(50, 10, 50, 1),
+    child: ElevatedButton(
+      onPressed: () {
+        onTap();
+      },
+      style: ButtonStyle(
+          minimumSize: MaterialStateProperty.all(Size.fromHeight(45)),
+          backgroundColor: MaterialStateProperty.resolveWith((states) {
+            if (states.contains(MaterialState.pressed)) {
+              return Colors.black45;
+            }
+            return Colors.black;
+          }),
+          shape: MaterialStateProperty.all(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          )),
+      child: Text(text),
     ),
   );
 }
