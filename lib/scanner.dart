@@ -5,7 +5,10 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'fillcylinders.dart';
 
 class Scanner extends StatefulWidget {
-  const Scanner({super.key});
+  List qrList;
+  String accessToken;
+  Scanner({Key? mykey, required this.qrList, required this.accessToken})
+      : super(key: mykey);
 
   @override
   State<Scanner> createState() => _ScannerState();
@@ -14,7 +17,6 @@ class Scanner extends StatefulWidget {
 class _ScannerState extends State<Scanner> {
   final qrKey = GlobalKey(debugLabel: 'QR');
   Barcode? barcode;
-  List qrList = [];
 
   QRViewController? controller;
   @override
@@ -52,9 +54,9 @@ class _ScannerState extends State<Scanner> {
                 onPressed: () {
                   try {
                     setState(() {
-                      if (!qrList.contains('${barcode!.code}') &&
+                      if (!widget.qrList.contains('${barcode!.code}') &&
                           {barcode!.code} != null) {
-                        qrList.add('${barcode!.code}');
+                        widget.qrList.add('${barcode!.code}');
                       }
                     });
                   } catch (e) {}
@@ -98,7 +100,8 @@ class _ScannerState extends State<Scanner> {
                   context,
                   MaterialPageRoute(
                       builder: (context) => FillCylinders(
-                            qrList: qrList,
+                            qrList: widget.qrList,
+                            accessToken: widget.accessToken,
                           )));
             },
             icon: const Icon(Icons.arrow_back_rounded),

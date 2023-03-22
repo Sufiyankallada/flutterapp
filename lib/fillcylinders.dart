@@ -1,12 +1,13 @@
-
 import 'package:flutter/material.dart';
 import 'package:oru_app/fillcylinder_mannually.dart';
 import 'package:oru_app/scanner.dart';
 
 class FillCylinders extends StatefulWidget {
   List qrList;
+  String accessToken;
 
-  FillCylinders({Key? mykey, required this.qrList}) : super(key: mykey);
+  FillCylinders({Key? mykey, required this.qrList, required this.accessToken})
+      : super(key: mykey);
 
   @override
   State<FillCylinders> createState() => _FillCylindersState();
@@ -37,12 +38,17 @@ class _FillCylindersState extends State<FillCylinders> {
         ),
       ),
       body: ListView(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         children: [
           IconButton(
               onPressed: () {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => const Scanner()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Scanner(
+                              accessToken: widget.accessToken,
+                              qrList: widget.qrList,
+                            )));
               },
               icon: const Icon(
                 Icons.qr_code_scanner,
@@ -50,9 +56,10 @@ class _FillCylindersState extends State<FillCylinders> {
               ),
               alignment: Alignment.topCenter),
 
-          SizedBox(
+          const SizedBox(
             height: 30,
           ),
+
           // Text("${widget.qrList[0]}")
           ListView.builder(
               scrollDirection: Axis.vertical,
@@ -61,10 +68,25 @@ class _FillCylindersState extends State<FillCylinders> {
               itemBuilder: (context, index) {
                 return Column(
                   children: [
-                    ListTile(
-                      title: Text(widget.qrList[index]),
-                      subtitle: Text((index + 1).toString()),
-                      tileColor: Colors.grey[350],
+                    Card(
+                      elevation: 4,
+                      child: ListTile(
+                        title: Text(widget.qrList[index]),
+                        subtitle: Text((index + 1).toString()),
+                        tileColor: Colors.grey[350],
+                        trailing: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              widget.qrList.removeAt(index);
+                            });
+                          },
+                          child: Icon(
+                            Icons.remove_circle,
+                            color: Colors.red[700],
+                            size: 30,
+                          ),
+                        ),
+                      ),
                     ),
                     const SizedBox(
                       height: 10,
@@ -83,7 +105,7 @@ class _FillCylindersState extends State<FillCylinders> {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
 
@@ -97,7 +119,11 @@ class _FillCylindersState extends State<FillCylinders> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => FillMannually()),
+                  MaterialPageRoute(
+                      builder: (context) => FillMannually(
+                            accessToken: widget.accessToken,
+                            qrList: widget.qrList,
+                          )),
                 );
               },
               tileColor: Colors.grey[300],

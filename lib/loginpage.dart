@@ -46,15 +46,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               signInSignUpButton("Login", context, () {
                 postRequest();
-                // print('aaaaaaaaaaaaaaaa');
-                // print(password.text);
-                // print("bbbbbbbbbbbbb");
               }),
-              // ElevatedButton(
-              //     onPressed: () {
-              //       postRequest();
-              //     },
-              //     child: Text("cawqes"))
             ],
           ),
         ));
@@ -76,7 +68,11 @@ class _LoginPageState extends State<LoginPage> {
       final responseData = json.decode(response.body);
       print(responseData['message']);
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => HomePage()));
+          context,
+          MaterialPageRoute(
+              builder: (context) => HomePage(
+                    access_token: responseData["token"],
+                  )));
       // ...
     } else {
       // request failed, handle error
