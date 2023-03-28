@@ -86,6 +86,31 @@ class _ScannerState extends State<Scanner> {
         .listen((barcode) => setState(() => this.barcode = barcode));
   }*/
   Barcode? lastScanned;
+  int count=0;
+void onQRViewCreated(QRViewController controller) {
+  setState(() {
+    this.controller = controller;
+  });
+
+  controller.scannedDataStream.listen((barcode) {
+    if (lastScanned?.code != barcode.code) {
+      lastScanned = barcode;
+      count++;
+      setState(() => this.barcode = barcode);
+      FlutterBeep.beep();
+      Fluttertoast.showToast(
+          msg: "Scanned: ${count}",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Color.fromARGB(255, 100, 100, 100),
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+    }
+  });
+}
+  /*Barcode? lastScanned;
 
 void onQRViewCreated(QRViewController controller) {
   setState(() {
@@ -108,7 +133,7 @@ void onQRViewCreated(QRViewController controller) {
       );
     }
   });
-}
+}*/
 
   @override
   Widget build(BuildContext context) {
