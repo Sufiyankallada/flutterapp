@@ -4,7 +4,7 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'fillcylinders.dart';
 import 'package:flutter_beep/flutter_beep.dart';
-
+import 'dart:collection';
 class Scanner extends StatefulWidget {
   List qrList;
   String accessToken;
@@ -85,7 +85,35 @@ class _ScannerState extends State<Scanner> {
     controller.scannedDataStream
         .listen((barcode) => setState(() => this.barcode = barcode));
   }*/
-  Barcode? lastScanned;
+
+  //import 'dart:collection';
+
+Set<String> scannedQRCodes = HashSet<String>();
+
+void onQRViewCreated(QRViewController controller) {
+  setState(() {
+    this.controller = controller;
+  });
+
+  controller.scannedDataStream.listen((barcode) {
+    if (!scannedQRCodes.contains(barcode.code)) {
+      scannedQRCodes.add(barcode.code!);
+      setState(() => this.barcode = barcode);
+      FlutterBeep.beep();
+      Fluttertoast.showToast(
+          msg: "Scanned: ${scannedQRCodes.length}",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Color.fromARGB(255, 38, 106, 194),
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+    }
+  });
+}
+
+  /*Barcode? lastScanned;
   int count=0;
 void onQRViewCreated(QRViewController controller) {
   setState(() {
@@ -103,37 +131,14 @@ void onQRViewCreated(QRViewController controller) {
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
-          backgroundColor: Color.fromARGB(255, 19, 77, 153),
-          textColor: Colors.white,
-          fontSize: 16.0
-      );
-    }
-  });
-}
-  /*Barcode? lastScanned;
-
-void onQRViewCreated(QRViewController controller) {
-  setState(() {
-    this.controller = controller;
-  });
-
-  controller.scannedDataStream.listen((barcode) {
-    if (lastScanned?.code != barcode.code) {
-      lastScanned = barcode;
-      setState(() => this.barcode = barcode);
-      FlutterBeep.playSysSound(41);
-      Fluttertoast.showToast(
-          msg: "Scanned: ${barcode.code}",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.black,
+          backgroundColor: Color.fromARGB(255, 38, 106, 194),
           textColor: Colors.white,
           fontSize: 16.0
       );
     }
   });
 }*/
+ 
 
   @override
   Widget build(BuildContext context) {
