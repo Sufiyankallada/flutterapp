@@ -103,7 +103,7 @@ void onQRViewCreated(QRViewController controller) {
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
-          backgroundColor: Color.fromARGB(255, 24, 86, 168),
+          backgroundColor: Color.fromARGB(255, 19, 77, 153),
           textColor: Colors.white,
           fontSize: 16.0
       );
