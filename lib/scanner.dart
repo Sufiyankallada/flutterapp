@@ -101,9 +101,9 @@ void onQRViewCreated(QRViewController controller) {
       Fluttertoast.showToast(
           msg: "Scanned: ${count}",
           toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
+          gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
-          backgroundColor: Color.fromARGB(255, 100, 100, 100),
+          backgroundColor: Color.fromARGB(255, 24, 86, 168),
           textColor: Colors.white,
           fontSize: 16.0
       );
