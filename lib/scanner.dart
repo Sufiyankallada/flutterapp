@@ -109,7 +109,7 @@ Set<String> scannedQRCodes = HashSet<String>();
       FlutterBeep.beep();
       Fluttertoast.showToast(
           //msg: "Scanned: ${scannedQRCodes.length}",
-          msg: "Scanned",
+          msg: "scanned",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
