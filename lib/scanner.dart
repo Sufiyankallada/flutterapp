@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:oru_app/functions.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'fillcylinders.dart';
@@ -55,9 +56,14 @@ class _ScannerState extends State<Scanner> {
                 onPressed: () {
                   try {
                     setState(() {
-                      if (!widget.qrList.contains('${barcode!.code}') &&
+                      if (widget.qrList
+                          .contains('${barcode!.code}'.substring(4))) {
+                        toast('${barcode!.code}' + " is already added");
+                      } else if (!widget.qrList
+                              .contains('${barcode!.code}'.substring(4)) &&
                           {barcode!.code} != null) {
-                        widget.qrList.add('${barcode!.code}');
+                        widget.qrList.add('${barcode!.code}'.substring(4));
+                        toast("added " + '${barcode!.code}');
                       }
                     });
                   } catch (e) {}
@@ -90,18 +96,20 @@ class _ScannerState extends State<Scanner> {
 
 Set<String> scannedQRCodes = HashSet<String>();
 
-void onQRViewCreated(QRViewController controller) {
-  setState(() {
-    this.controller = controller;
-  });
+  void onQRViewCreated(QRViewController controller) {
+    setState(() {
+      this.controller = controller;
+    });
 
-  controller.scannedDataStream.listen((barcode) {
+  
+  controller.scannedDataStream.listen((barcode){
     if (!scannedQRCodes.contains(barcode.code)) {
       scannedQRCodes.add(barcode.code!);
       setState(() => this.barcode = barcode);
       FlutterBeep.beep();
       Fluttertoast.showToast(
-          msg: "Scanned: ${scannedQRCodes.length}",
+          //msg: "Scanned: ${scannedQRCodes.length}",
+          msg: "Scanned",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
@@ -110,35 +118,23 @@ void onQRViewCreated(QRViewController controller) {
           fontSize: 16.0
       );
     }
-  });
-}
-
-  /*Barcode? lastScanned;
-  int count=0;
-void onQRViewCreated(QRViewController controller) {
-  setState(() {
-    this.controller = controller;
-  });
-
-  controller.scannedDataStream.listen((barcode) {
+  } /*{
     if (lastScanned?.code != barcode.code) {
       lastScanned = barcode;
-      count++;
       setState(() => this.barcode = barcode);
-      FlutterBeep.beep();
+      FlutterBeep.playSysSound(41);
       Fluttertoast.showToast(
-          msg: "Scanned: ${count}",
+          msg: "Scanned: ${barcode.code}",
           toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
+          gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 1,
-          backgroundColor: Color.fromARGB(255, 38, 106, 194),
+          backgroundColor: Colors.black,
           textColor: Colors.white,
           fontSize: 16.0
       );
     }
-  });
-}*/
- 
+  }*/);
+}
 
   @override
   Widget build(BuildContext context) {
@@ -221,11 +217,26 @@ void onQRViewCreated(QRViewController controller) {
                   body: Stack(
                     alignment: Alignment.center,
                     children: <Widget>[
-                      Positioned(bottom: 10, child: buidResult()),
-                      Positioned(bottom: 50, child: addButton())
+                      Positioned(bottom: 90, child: buidResult()),
+                      Positioned(bottom: 10, child: addButton()),
                     ],
                   ),
                 ),
+              ),
+              Divider(),
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => FillCylinders(
+                                  qrList: widget.qrList,
+                                  accessToken: widget.accessToken,
+                                )));
+                  },
+                  child: Text("Submit")),
+              SizedBox(
+                height: 10,
               )
             ],
           ),

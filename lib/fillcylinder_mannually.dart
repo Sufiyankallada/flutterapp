@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:oru_app/fillcylinders.dart';
-
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:oru_app/reusables.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -32,6 +32,8 @@ class _FillMannuallyState extends State<FillMannually> {
     fetchCustomerDetails();
   }
 
+  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,7 +53,8 @@ class _FillMannuallyState extends State<FillMannually> {
               height: 30,
             ),
             const Text("Cylinder Type"),
-            DropdownButton<String>(
+            
+            /*DropdownButton<String>(
               items: cylinderTypes.map((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
@@ -67,7 +70,52 @@ class _FillMannuallyState extends State<FillMannually> {
               dropdownColor: const Color.fromARGB(255, 255, 255, 255),
               style: const TextStyle(color: Colors.black),
               borderRadius: const BorderRadius.all(Radius.elliptical(10, 10)),
-            ),
+            ),*/
+            DropdownSearch<String>(
+  items: cylinderTypes,
+  
+  //showClearButton: true,
+     dropdownDecoratorProps: DropDownDecoratorProps(
+        dropdownSearchDecoration: InputDecoration(
+            //labelText: "Cylinder Type 1",
+            hintText: "Search Cylinder Type 2",
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: BorderSide(),
+    ),
+        ),
+    ),
+ 
+  onChanged: (value) {
+    setState(() {
+      dropDownvalueCylinder = value.toString();
+    });
+  },
+  selectedItem: dropDownvalueCylinder,
+),
+            /*DropdownSearch<String>(
+  items: cylinderTypes,
+  
+  //showClearButton: true,
+     dropdownDecoratorProps: DropDownDecoratorProps(
+        dropdownSearchDecoration: InputDecoration(
+            //labelText: "Cylinder Type 1",
+            hintText: "Search Cylinder Type 2",
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: BorderSide(),
+    ),
+        ),
+    ),
+ 
+  onChanged: (value) {
+    setState(() {
+      dropDownvalueCylinder = value.toString();
+    });
+  },
+  selectedItem: dropDownvalueCylinder,
+),*/
+
             const SizedBox(
               height: 30,
             ),
