@@ -159,7 +159,6 @@ class _FillCylindersState extends State<FillCylinders> {
                   MaterialPageRoute(
                       builder: (context) => FillMannually(
                             accessToken: widget.accessToken,
-                            qrList: widget.qrList,
                           )),
                 );
               },
