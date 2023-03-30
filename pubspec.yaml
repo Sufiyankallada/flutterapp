@@ -41,6 +41,7 @@ dependencies:
   dropdown_search: ^5.0.6
   fluttertoast: ^8.2.1
   flutter_beep: ^1.0.0
+  flutter_typeahead: ^4.3.7
 
 dev_dependencies:
   flutter_test:
