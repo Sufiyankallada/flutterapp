@@ -35,6 +35,11 @@ class _LoginPageState extends State<LoginPage> {
             Container(
               width: 70,
               height: 70,
+              margin:EdgeInsets.only(
+                top:70
+              ),
+
+              //child:Text("sreelu's", style: TextStyle(color: Color.fromARGB(255, 255, 253, 253))),
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 image: DecorationImage(
