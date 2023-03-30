@@ -75,53 +75,6 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-/*
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
-
-  @override
-  State<LoginPage> createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
-  TextEditingController email = TextEditingController();
-  TextEditingController password = TextEditingController();
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text("Login", style: TextStyle(color: Colors.black)),
-          centerTitle: true,
-        ),
-        body: SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(10, 200, 10, 0),
-          child: Column(
-            children: [
-              reusableTextField(
-                "Email",
-                Icons.person,
-                false,
-                email,
-              ),
-              const SizedBox(
-                height: 30,
-              ),
-              reusableTextField(
-                "Password",
-                Icons.lock_outline,
-                true,
-                password,
-              ),
-              const SizedBox(
-                height: 30,
-              ),
-              signInSignUpButton("Login", context, () {
-                postRequest();
-              }),
-            ],
-          ),
-        ));
-  }*/
 
   Future<void> postRequest() async {
     final url = Uri.parse('http://soc-erp.showcase.code7.in/api/authenticate');
