@@ -13,6 +13,12 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
+
+    /*24 is for notification bar on Android*/
+    //change item hieght to change the hieght of grid
+    final double itemHeight = (size.height - kToolbarHeight - 24) / 3.2;
+    final double itemWidth = size.width / 2;
     return Scaffold(
       appBar: AppBar(
         elevation: 0.9,
@@ -42,69 +48,100 @@ class _HomePageState extends State<HomePage> {
               )),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(children: [
-          SizedBox(
-            height: 100,
-          ),
-          Container(
-            color: Colors.white,
-            width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(50, 10, 50, 1),
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => FillCylinders(
-                              qrList: [],
-                              accessToken: widget.access_token,
-                            )));
-              },
-              style: ButtonStyle(
-                  minimumSize: MaterialStateProperty.all(Size.fromHeight(45)),
-                  backgroundColor: MaterialStateProperty.resolveWith((states) {
-                    if (states.contains(MaterialState.pressed)) {
-                      return Colors.black45;
-                    }
-                    return Colors.black;
-                  }),
-                  shape: MaterialStateProperty.all(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  )),
-              child: const Text('Fill Cylinders'),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 16),
+              child: GridView.count(
+                crossAxisCount: 2,
+                childAspectRatio: (itemWidth / itemHeight),
+                mainAxisSpacing: 8,
+                crossAxisSpacing: 8,
+                children: [
+                  GridButton(
+                      color: Colors.green[100]!,
+                      icon: Icons.add_circle_outline,
+                      label: "Fill Cylinders",
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => FillCylinders(
+                                      qrList: [],
+                                      accessToken: widget.access_token,
+                                    )));
+                      }),
+                  GridButton(
+                      color: Colors.blue[100]!,
+                      icon: Icons.delivery_dining,
+                      label: "Deliver Cylinders",
+                      onPressed: () {}),
+                  GridButton(
+                      color: Colors.pink[100]!,
+                      icon: Icons.directions_bike,
+                      label: "Pickup",
+                      onPressed: () {}),
+                  GridButton(
+                      color: Colors.orange[100]!,
+                      icon: Icons.local_shipping,
+                      label: "Unloading",
+                      onPressed: () {}),
+                  GridButton(
+                      color: Colors.purple[100]!,
+                      icon: Icons.person,
+                      label: "Manual",
+                      onPressed: () {}),
+                  GridButton(
+                      color: Colors.teal[100]!,
+                      icon: Icons.add,
+                      label: "Add New Cylinder",
+                      onPressed: () {}),
+                ],
+              ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
 
-          //all buttons below are dummy ,does not work
+class GridButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onPressed;
+  final Color color;
 
-          SizedBox(
-            height: 25,
-          ),
-          Kbutton("Deliver Cylinders ", () => () {}),
+  const GridButton({
+    Key? key,
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+    required this.color,
+  }) : super(key: key);
 
-          SizedBox(
-            height: 25,
-          ),
-          Kbutton("Pickup ", () => () {}),
-          SizedBox(
-            height: 25,
-          ),
-          Kbutton("Unloading ", () => () {}),
-          SizedBox(
-            height: 25,
-          ),
-          Kbutton("Manual ", () => () {}),
-          SizedBox(
-            height: 25,
-          ),
-          Kbutton("Add New Cylinder ", () => () {}),
-          SizedBox(
-            height: 25,
-          ),
-        ]),
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      borderRadius: BorderRadius.circular(8),
+      color: color,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(8),
+        onTap: onPressed,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 48),
+            SizedBox(height: 12),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16),
+            ),
+          ],
+        ),
       ),
     );
   }

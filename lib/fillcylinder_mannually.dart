@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:oru_app/fillcylinders.dart';
+import 'package:oru_app/functions.dart';
 
 import 'package:oru_app/reusables.dart';
 import 'dart:convert';
@@ -43,8 +44,6 @@ class _FillMannuallyState extends State<FillMannually> {
     fetchCustomerDetails();
   }
 
-  
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,12 +62,23 @@ class _FillMannuallyState extends State<FillMannually> {
             const SizedBox(
               height: 30,
             ),
-            const Text("Cylinder Type"),
-            DropdownButton<String>(
-              items: cylinderTypes.map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
+            TypeAheadField(
+              textFieldConfiguration: TextFieldConfiguration(
+                  decoration: InputDecoration(
+                    hintText: dropDownvalueCylinder,
+                    border: OutlineInputBorder(),
+                    labelText: "Cylinder Types",
+                  ),
+                  controller: cylinderController),
+              suggestionsCallback: (String pattern) async {
+                return cylinderTypes
+                    .where((item) =>
+                        item.toLowerCase().contains(pattern.toLowerCase()))
+                    .toList();
+              },
+              itemBuilder: (BuildContext context, String suggestion) {
+                return ListTile(
+                  title: Text(suggestion),
                 );
               },
               onSuggestionSelected: (String suggestion) {
@@ -77,13 +87,9 @@ class _FillMannuallyState extends State<FillMannually> {
                   cylinderController.text = suggestion;
                 });
               },
-              hint: Text(dropDownvalueCylinder),
-              dropdownColor: const Color.fromARGB(255, 255, 255, 255),
-              style: const TextStyle(color: Colors.black),
-              borderRadius: const BorderRadius.all(Radius.elliptical(10, 10)),
             ),
-            const SizedBox(
-              height: 30,
+            SizedBox(
+              height: 60,
             ),
             TypeAheadField(
               textFieldConfiguration: TextFieldConfiguration(
