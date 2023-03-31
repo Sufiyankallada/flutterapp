@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import "package:oru_app/fillcylinders.dart";
 import 'package:oru_app/reusables.dart';
+import 'package:oru_app/Drawer1.dart';
 
 class HomePage extends StatefulWidget {
   String access_token;
@@ -20,8 +21,10 @@ class _HomePageState extends State<HomePage> {
     final double itemHeight = (size.height - kToolbarHeight - 24) / 3.2;
     final double itemWidth = size.width / 2;
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 170, 229, 238),
       appBar: AppBar(
         elevation: 0.9,
+        backgroundColor: Color.fromARGB(255, 73, 183, 202),
         title: const Text('Day Scholars',
             style: TextStyle(
                 color: Colors.black,
@@ -104,6 +107,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
+      drawer: buildDrawer(context),
     );
   }
 }
