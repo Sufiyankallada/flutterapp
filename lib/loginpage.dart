@@ -21,9 +21,10 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:Color.fromARGB(255, 18, 88, 185),
+      backgroundColor: Color.fromARGB(255, 18, 88, 185),
       appBar: AppBar(
-        title: const Text("sreelu's", style: TextStyle(color: Color.fromARGB(255, 255, 253, 253))),
+        title: const Text("sreelu's",
+            style: TextStyle(color: Color.fromARGB(255, 255, 253, 253))),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -35,9 +36,7 @@ class _LoginPageState extends State<LoginPage> {
             Container(
               width: 70,
               height: 70,
-              margin:EdgeInsets.only(
-                top:70
-              ),
+              margin: EdgeInsets.only(top: 70),
 
               //child:Text("sreelu's", style: TextStyle(color: Color.fromARGB(255, 255, 253, 253))),
               decoration: const BoxDecoration(
@@ -50,14 +49,12 @@ class _LoginPageState extends State<LoginPage> {
             ),
             const SizedBox(
               height: 50,
-              
             ),
             reusableTextField(
               "Email",
               Icons.person,
               false,
               email,
-              
             ),
             const SizedBox(
               height: 30,
@@ -71,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
             const SizedBox(
               height: 30,
             ),
-            signInSignUpButton("Login", context, () {
+            signInSignUpButton("login", context, () {
               postRequest();
             }),
           ],
@@ -79,7 +76,6 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-
 
   Future<void> postRequest() async {
     final url = Uri.parse('http://soc-erp.showcase.code7.in/api/authenticate');
