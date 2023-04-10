@@ -3,20 +3,22 @@ import 'package:flutter/material.dart';
 import 'package:oru_app/functions.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'fillcylinders.dart';
+import '../screens/collectcylinders.dart';
+import '../screens/fillcylinders.dart';
 import 'package:flutter_beep/flutter_beep.dart';
 
-class Scanner extends StatefulWidget {
+class ScannerToCollect extends StatefulWidget {
   List qrList;
   String accessToken;
-  Scanner({Key? mykey, required this.qrList, required this.accessToken})
+  ScannerToCollect(
+      {Key? mykey, required this.qrList, required this.accessToken})
       : super(key: mykey);
 
   @override
-  State<Scanner> createState() => _ScannerState();
+  State<ScannerToCollect> createState() => _ScannerToCollectState();
 }
 
-class _ScannerState extends State<Scanner> {
+class _ScannerToCollectState extends State<ScannerToCollect> {
   final qrKey = GlobalKey(debugLabel: 'QR');
   Barcode? barcode;
 
@@ -129,7 +131,7 @@ class _ScannerState extends State<Scanner> {
               Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => FillCylinders(
+                      builder: (context) => CollectCylinder(
                             qrList: widget.qrList,
                             accessToken: widget.accessToken,
                           )));
@@ -208,7 +210,7 @@ class _ScannerState extends State<Scanner> {
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => FillCylinders(
+                            builder: (context) => CollectCylinder(
                                   qrList: widget.qrList,
                                   accessToken: widget.accessToken,
                                 )));

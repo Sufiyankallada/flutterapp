@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:oru_app/homepage.dart';
+import 'package:oru_app/screens/homepage.dart';
 
-import 'loginpage.dart';
+import 'screens/loginpage.dart';
 
 void main(List<String> args) {
   runApp(const MyApp());

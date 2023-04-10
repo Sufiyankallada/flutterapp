@@ -1,9 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:oru_app/fillcylinder_mannually.dart';
+import 'package:oru_app/screens/fillcylinder_mannually.dart';
 import 'package:oru_app/functions.dart';
-import 'package:oru_app/scanner.dart';
+import 'package:oru_app/screens/homepage.dart';
+import 'package:oru_app/Scanners/scanner_to_fill.dart';
 import 'package:http/http.dart' as http;
 
 class FillCylinders extends StatefulWidget {
@@ -22,6 +23,7 @@ class _FillCylindersState extends State<FillCylinders> {
   List cylinderId = [];
   bool flag = false;
   bool cancel = false;
+  List invalidCylinders = [];
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +39,11 @@ class _FillCylindersState extends State<FillCylinders> {
         automaticallyImplyLeading: false,
         leading: IconButton(
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        HomePage(access_token: widget.accessToken)));
           },
           icon: const Icon(
             Icons.arrow_back_sharp,
@@ -86,6 +92,10 @@ class _FillCylindersState extends State<FillCylinders> {
                         trailing: GestureDetector(
                           onTap: () {
                             setState(() {
+                              if (invalidCylinders
+                                  .contains(widget.qrList[index])) {
+                                invalidCylinders.remove(widget.qrList[index]);
+                              }
                               widget.qrList.removeAt(index);
                             });
                           },
@@ -109,15 +119,14 @@ class _FillCylindersState extends State<FillCylinders> {
               if (flag) {
                 toast("some QR codes are not valid");
               }
-              makePostRequestToFill(widget.accessToken, cylinderId, 40);
-
               flag = false;
-              cylinderId.clear();
+
               if (widget.qrList.isEmpty) {
                 setState(() {
                   cancel = false;
                 });
               }
+              if (widget.qrList.isNotEmpty) _showConfirmationDialog();
             },
             child: const Text(
               "Submit",
@@ -127,19 +136,6 @@ class _FillCylindersState extends State<FillCylinders> {
           const SizedBox(
             height: 20,
           ),
-
-          cancel
-              ? ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      cylinderId.clear();
-                      cancel = false;
-                    });
-                  },
-                  child: Text("Cancel"),
-                  style: ButtonStyle(),
-                )
-              : Text(""),
           Divider(thickness: 1),
 
           SizedBox(
@@ -189,20 +185,24 @@ class _FillCylindersState extends State<FillCylinders> {
     });
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-
-      setState(() {
-        cylinderId.add(data["cylinder"]["id"]);
-        widget.qrList.remove(qrId);
-      });
-      print(cylinderId);
+      if (!cylinderId.contains(data["cylinder"]["id"])) {
+        setState(() {
+          cylinderId.add(data["cylinder"]["id"]);
+        });
+      }
     } else {
+      if (!invalidCylinders.contains(qrId)) {
+        setState(() {
+          invalidCylinders.add(qrId);
+        });
+      }
       flag = true;
     }
   }
 
   void makePostRequestToFill(
       String accessToken, List cylinderId, int purity) async {
-    if (!cylinderId.isEmpty) {
+    if (cylinderId.isNotEmpty) {
       var url = Uri.parse('http://soc-erp.showcase.code7.in/api/fill');
 
       var requestBody = jsonEncode({
@@ -217,7 +217,6 @@ class _FillCylindersState extends State<FillCylinders> {
         'Content-Type': 'application/json'
       });
 
-      print('Response status: ${response.statusCode}');
       if (response.statusCode != 200) {
         toast("Error");
       } else {
@@ -227,5 +226,57 @@ class _FillCylindersState extends State<FillCylinders> {
         });
       }
     }
+  }
+
+  Future<void> _showConfirmationDialog() async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmation'),
+          content: Text('Are you sure you want to submit?'),
+          actions: [
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                setState(() {
+                  cylinderId.clear();
+                });
+
+                Navigator.pop(context);
+              },
+            ),
+            TextButton(
+              child: const Text('Proceed'),
+              onPressed: () {
+                if (flag) {
+                  toast("some QR codes are not valid");
+                }
+                makePostRequestToFill(widget.accessToken, cylinderId, 40);
+
+                flag = false;
+                cylinderId.clear();
+                if (widget.qrList.isEmpty) {
+                  setState(() {
+                    cancel = false;
+                  });
+                }
+                setState(() {
+                  widget.qrList.clear();
+                  widget.qrList.addAll(invalidCylinders);
+                });
+
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(''),
+                  ),
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

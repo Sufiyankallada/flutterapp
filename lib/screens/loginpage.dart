@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:oru_app/functions.dart';
-import 'package:oru_app/homepage.dart';
+import 'package:oru_app/screens/homepage.dart';
 import 'package:oru_app/reusables.dart';
 
 class LoginPage extends StatefulWidget {
