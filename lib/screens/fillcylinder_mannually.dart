@@ -48,6 +48,8 @@ class _FillMannuallyState extends State<FillMannually> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.black),
+        backgroundColor: Color.fromARGB(255, 73, 183, 202),
         title: const Text(
           "Fill Cylinders manually",
           style: TextStyle(color: Colors.black),

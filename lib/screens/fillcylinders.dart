@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:oru_app/reusables.dart';
 import 'package:oru_app/screens/fillcylinder_mannually.dart';
 import 'package:oru_app/functions.dart';
 import 'package:oru_app/screens/homepage.dart';
@@ -29,6 +30,7 @@ class _FillCylindersState extends State<FillCylinders> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color.fromARGB(255, 73, 183, 202),
         title: const Text(
           'Fill Cylinders',
           style: TextStyle(
@@ -114,6 +116,14 @@ class _FillCylindersState extends State<FillCylinders> {
                 );
               }),
           ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color.fromARGB(255, 63, 93, 118),
+              minimumSize: Size(80, 40),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(
+                    20.0), // Set the radius to create a rounded button
+              ),
+            ),
             onPressed: () {
               update();
               if (flag) {
@@ -141,26 +151,15 @@ class _FillCylindersState extends State<FillCylinders> {
           SizedBox(
             height: 10,
           ),
-
-          Card(
-            elevation: 2,
-            child: ListTile(
-              title: Text("Manual Entries"),
-              leading: Icon(
-                Icons.add,
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => FillMannually(
-                            accessToken: widget.accessToken,
-                          )),
-                );
-              },
-              tileColor: Colors.white,
-            ),
-          )
+          buttons(context, "Manual Entries", () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => FillMannually(
+                        accessToken: widget.accessToken,
+                      )),
+            );
+          })
         ],
       ),
     );

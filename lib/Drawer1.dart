@@ -13,37 +13,75 @@ Drawer buildDrawer(BuildContext context) {
       children: [
         const DrawerHeader(
           decoration: BoxDecoration(
-            color: Color.fromARGB(255, 142, 235, 139),
+            color: Color.fromARGB(255, 90, 169, 183),
           ),
           child: Text('Drawer Header'),
         ),
-        ListTile(
-          title: const Text('About'),
-          trailing: Icon(Icons.info),
-          onTap: () {
-            // Update the state of the app.
-            // ...
-          },
+        Card(
+          elevation: 0.5,
+          child: ListTile(
+            tileColor: Colors.blue[50]!,
+            title: const Text('About'),
+            trailing: Icon(Icons.info),
+            onTap: () {
+              // Update the state of the app.
+              // ...
+            },
+          ),
         ),
-        ListTile(
-          title: const Text('Settings'),
-          trailing: Icon(Icons.settings),
-          onTap: () {
-            // Update the state of the app.
-            // ...
-          },
+        Card(
+          elevation: 0.5,
+          child: ListTile(
+            tileColor: Colors.blue[50]!,
+            title: const Text('Settings'),
+            trailing: Icon(Icons.settings),
+            onTap: () {
+              // Update the state of the app.
+              // ...
+            },
+          ),
         ),
-        ListTile(
-          title: const Text('Logout'),
-          trailing: Icon(Icons.logout),
-          onTap: () {
-            Navigator.of(context).popUntil((route) => route.isFirst);
-            Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => LoginPage()));
-            toast("Successfully logged out");
-          },
+        Card(
+          elevation: 0.5,
+          child: ListTile(
+            tileColor: Colors.blue[50]!,
+            title: const Text('Logout'),
+            trailing: Icon(Icons.logout),
+            onTap: () {
+              _showConfirmationDialog(context);
+            },
+          ),
         ),
       ],
     ),
+  );
+}
+
+Future<void> _showConfirmationDialog(BuildContext context) async {
+  return showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Logout'),
+        content: Text('Are you sure ?'),
+        actions: [
+          TextButton(
+            child: Text('Cancel'),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          TextButton(
+            child: const Text('Proceed'),
+            onPressed: () {
+              Navigator.of(context).popUntil((route) => route.isFirst);
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => LoginPage()));
+              toast("Successfully logged out");
+            },
+          ),
+        ],
+      );
+    },
   );
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:oru_app/functions.dart';
+import 'package:oru_app/reusables.dart';
 import 'package:oru_app/screens/collectcylinders.dart';
 import 'package:oru_app/screens/delivercylinder.dart';
 
@@ -32,8 +33,9 @@ class _HomePageState extends State<HomePage> {
     return WillPopScope(
       onWillPop: () => _onBackButtonPressed(context),
       child: Scaffold(
-        backgroundColor: Color.fromARGB(255, 170, 229, 238),
+        backgroundColor: Color.fromARGB(255, 255, 255, 255),
         appBar: AppBar(
+          iconTheme: IconThemeData(color: Colors.black),
           elevation: 0.9,
           backgroundColor: Color.fromARGB(255, 73, 183, 202),
           title: const Text('Day Scholars',
@@ -54,10 +56,7 @@ class _HomePageState extends State<HomePage> {
             ),
             IconButton(
                 onPressed: () {
-                  logout(widget.access_token);
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => LoginPage()));
+                  _showConfirmationDialog(context);
                 },
                 icon: const Icon(
                   Icons.power_settings_new,
@@ -77,59 +76,42 @@ class _HomePageState extends State<HomePage> {
                   mainAxisSpacing: 8,
                   crossAxisSpacing: 8,
                   children: [
-                    GridButton(
-                        color: Colors.green[100]!,
-                        icon: Icons.add_circle_outline,
-                        label: "Fill Cylinders",
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => FillCylinders(
-                                        qrList: [],
-                                        accessToken: widget.access_token,
-                                      )));
-                        }),
-                    GridButton(
-                        color: Colors.blue[100]!,
-                        icon: Icons.delivery_dining,
-                        label: "Deliver Cylinders",
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => DeliverCylinder(
-                                      qrList: [],
-                                      accessToken: widget.access_token)));
-                        }),
-                    GridButton(
-                        color: Colors.pink[100]!,
-                        icon: Icons.directions_bike,
-                        label: "Pickup",
-                        onPressed: () {}),
-                    GridButton(
-                        color: Colors.orange[100]!,
-                        icon: Icons.local_shipping,
-                        label: "Collect",
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => CollectCylinder(
-                                        accessToken: widget.access_token,
-                                        qrList: [],
-                                      )));
-                        }),
-                    GridButton(
-                        color: Colors.purple[100]!,
-                        icon: Icons.person,
-                        label: "Manual",
-                        onPressed: () {}),
-                    GridButton(
-                        color: Colors.teal[100]!,
-                        icon: Icons.add,
-                        label: "Add New Cylinder",
-                        onPressed: () {}),
+                    GB("Fill Cylinders", Icons.add_circle_outline, () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => FillCylinders(
+                                    qrList: [],
+                                    accessToken: widget.access_token,
+                                  )));
+                    }),
+                    GB("Deliver Cylinders", Icons.delivery_dining, () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => DeliverCylinder(
+                                  qrList: [],
+                                  accessToken: widget.access_token)));
+                    }),
+                    GB("Pickup", Icons.directions_bike, () {}),
+                    GB("Collect", Icons.local_shipping, () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => CollectCylinder(
+                                    accessToken: widget.access_token,
+                                    qrList: [],
+                                  )));
+                    }),
+                    GB("Manual", Icons.person, () {}),
+                    GB("Add New Cylinder", Icons.add, () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => FillCylinders(
+                                  qrList: [],
+                                  accessToken: widget.access_token)));
+                    }),
                   ],
                 ),
               ),
@@ -225,4 +207,33 @@ class GridButton extends StatelessWidget {
       ),
     );
   }
+}
+
+Future<void> _showConfirmationDialog(BuildContext context) async {
+  return showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Logout'),
+        content: Text('Are you sure ?'),
+        actions: [
+          TextButton(
+            child: Text('Cancel'),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          TextButton(
+            child: const Text('Proceed'),
+            onPressed: () {
+              Navigator.of(context).popUntil((route) => route.isFirst);
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => LoginPage()));
+              toast("Successfully logged out");
+            },
+          ),
+        ],
+      );
+    },
+  );
 }

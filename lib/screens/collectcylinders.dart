@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:oru_app/reusables.dart';
 import 'package:oru_app/screens/collectcylinders_mannually.dart';
 
 import 'package:oru_app/functions.dart';
@@ -47,6 +48,7 @@ class _CollectCylinder extends State<CollectCylinder> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color.fromARGB(255, 73, 183, 202),
         title: const Text(
           'Collect Cylinders',
           style: TextStyle(
@@ -162,26 +164,21 @@ class _CollectCylinder extends State<CollectCylinder> {
           SizedBox(
             height: 10,
           ),
-          ElevatedButton(
-            onPressed: () {
-              update();
-              if (flag) {
-                toast("some QR codes are not valid");
-              }
-              flag = false;
 
-              if (widget.qrList.isEmpty) {
-                setState(() {
-                  cancel = false;
-                });
-              }
-              if (widget.qrList.isNotEmpty) _showConfirmationDialog();
-            },
-            child: const Text(
-              "Submit",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
+          buttons(context, "Submit", () {
+            update();
+            if (flag) {
+              toast("some QR codes are not valid");
+            }
+            flag = false;
+
+            if (widget.qrList.isEmpty) {
+              setState(() {
+                cancel = false;
+              });
+            }
+            if (widget.qrList.isNotEmpty) _showConfirmationDialog();
+          }),
           const SizedBox(
             height: 20,
           ),
@@ -190,26 +187,15 @@ class _CollectCylinder extends State<CollectCylinder> {
           SizedBox(
             height: 10,
           ),
-
-          Card(
-            elevation: 2,
-            child: ListTile(
-              title: Text("Manual Entries"),
-              leading: Icon(
-                Icons.add,
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => CollectCylindersMannually(
-                            accessToken: widget.accessToken,
-                          )),
-                );
-              },
-              tileColor: Colors.white,
-            ),
-          )
+          buttons(context, "Manual Entries", () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => CollectCylindersMannually(
+                        accessToken: widget.accessToken,
+                      )),
+            );
+          }),
         ],
       ),
     );

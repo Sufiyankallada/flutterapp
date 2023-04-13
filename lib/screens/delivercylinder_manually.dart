@@ -50,6 +50,8 @@ class _DeliverMannually extends State<DeliverMannually> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.black),
+        backgroundColor: Color.fromARGB(255, 73, 183, 202),
         title: const Text(
           "Deliver Cylinders manually",
           style: TextStyle(color: Colors.black),

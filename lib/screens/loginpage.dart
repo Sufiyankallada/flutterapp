@@ -21,13 +21,35 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Login", style: TextStyle(color: Colors.black)),
-          centerTitle: true,
+          flexibleSpace: Container(
+            height: 50,
+            width: 50,
+            margin: EdgeInsets.fromLTRB(18, 35, 257, 0),
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('images/socerp.png'),
+                fit: BoxFit.fill,
+              ),
+            ),
+          ),
+          backgroundColor: Color.fromARGB(255, 63, 93, 118),
         ),
         body: SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(10, 200, 10, 0),
+          padding: EdgeInsets.fromLTRB(10, 300, 10, 0),
           child: Column(
             children: [
+              // Container(
+              //   height: 90,
+              //   margin: EdgeInsets.fromLTRB(60, 0, 60, 60),
+
+              //   //child:Text("sreelu's", style: TextStyle(color: Color.fromARGB(255, 255, 253, 253))),
+              //   decoration: const BoxDecoration(
+              //     image: DecorationImage(
+              //       image: AssetImage('images/logo3.png'),
+              //       fit: BoxFit.fill,
+              //     ),
+              //   ),
+              // ),
               reusableTextField(
                 "Email",
                 Icons.person,

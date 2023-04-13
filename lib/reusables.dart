@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:oru_app/screens/homepage.dart';
 
 TextField reusableTextField(String text, IconData icon, bool isPassword,
     TextEditingController controller) {
@@ -50,7 +51,7 @@ Container signInSignUpButton(
             if (states.contains(MaterialState.pressed)) {
               return Colors.black26;
             }
-            return Colors.white70;
+            return Color.fromARGB(255, 63, 93, 118);
           }),
           shape: MaterialStateProperty.all(
             RoundedRectangleBorder(
@@ -60,7 +61,7 @@ Container signInSignUpButton(
       child: Text(
         text,
         style: const TextStyle(
-          color: Colors.black87,
+          color: Colors.white,
           fontWeight: FontWeight.bold,
           fontSize: 16,
         ),
@@ -86,7 +87,7 @@ Container buttons(BuildContext context, String text, Function onTap) {
             if (states.contains(MaterialState.pressed)) {
               return Colors.white;
             }
-            return Colors.grey[300];
+            return Color.fromARGB(255, 63, 93, 118);
           }),
           shape: MaterialStateProperty.all(
             RoundedRectangleBorder(
@@ -96,7 +97,7 @@ Container buttons(BuildContext context, String text, Function onTap) {
       child: Text(
         text,
         style: const TextStyle(
-          color: Colors.black87,
+          color: Colors.white,
           fontWeight: FontWeight.bold,
           fontSize: 16,
         ),
@@ -129,5 +130,18 @@ Container Kbutton(String text, Function onTap()) {
           )),
       child: Text(text),
     ),
+  );
+}
+
+Card GB(String text, IconData iconss, Function() onTap) {
+  return Card(
+    elevation: 3,
+    child: GridButton(
+        color: Colors.blue[50]!,
+        icon: iconss,
+        label: text,
+        onPressed: () {
+          onTap();
+        }),
   );
 }
