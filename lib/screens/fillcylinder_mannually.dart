@@ -20,6 +20,7 @@ class FillMannually extends StatefulWidget {
 
 class _FillMannuallyState extends State<FillMannually> {
   TextEditingController cylinderNumber = TextEditingController();
+  TextEditingController purity = TextEditingController();
   List<String> cylinderTypes = [];
   List<String> customerName = [];
   String dropDownvalueCylinder = "";
@@ -56,11 +57,25 @@ class _FillMannuallyState extends State<FillMannually> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.fromLTRB(20, 40, 20, 20),
         child: ListView(
           children: [
-            reusableTextField(
-                "Cylinder Number", Icons.arrow_right, false, cylinderNumber),
+            Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: numberTextFeild(
+                    "Cylinder Number",
+                    false,
+                    cylinderNumber,
+                  ),
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Expanded(child: numberTextFeild("Purity", true, purity)),
+              ],
+            ),
             const SizedBox(
               height: 30,
             ),
@@ -174,7 +189,8 @@ class _FillMannuallyState extends State<FillMannually> {
                     cylinderTypeId[
                         cylinderTypes.indexOf(cylinderTypesTyped[i])]);
               }
-              makePostRequestToFill(widget.accessToken, cylinderID, 40);
+              makePostRequestToFill(
+                  widget.accessToken, cylinderID, int.parse(purity.text));
 
               setState(() {
                 if (cylinderNumbersTyped.isNotEmpty) {

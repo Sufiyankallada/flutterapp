@@ -1,24 +1,29 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:oru_app/functions.dart';
-import 'package:oru_app/screens/delivercylinder.dart';
+import 'package:oru_app/screens/addcylinders.dart';
+
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:oru_app/screens/fillcylinders.dart';
+
 import 'package:flutter_beep/flutter_beep.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class ScannerToDeliver extends StatefulWidget {
-  List qrList;
-  String accessToken;
-  ScannerToDeliver(
-      {Key? mykey, required this.qrList, required this.accessToken})
-      : super(key: mykey);
+Future<void> initializeSharedPreferences(String QR) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  @override
-  State<ScannerToDeliver> createState() => _ScannerToDeliverState();
+  await prefs.setString("QR", QR);
 }
 
-class _ScannerToDeliverState extends State<ScannerToDeliver> {
+class ScannerToGetQr extends StatefulWidget {
+  String accessToken;
+  ScannerToGetQr({Key? mykey, required this.accessToken}) : super(key: mykey);
+
+  @override
+  State<ScannerToGetQr> createState() => _ScannerToGetQrState();
+}
+
+class _ScannerToGetQrState extends State<ScannerToGetQr> {
   final qrKey = GlobalKey(debugLabel: 'QR');
   Barcode? barcode;
 
@@ -54,23 +59,14 @@ class _ScannerToDeliverState extends State<ScannerToDeliver> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            ElevatedButton(
-                onPressed: () {
-                  try {
-                    setState(() {
-                      if (widget.qrList
-                          .contains('${barcode!.code}'.substring(4))) {
-                        toast('${barcode!.code}' + " is already added");
-                      } else if (!widget.qrList
-                              .contains('${barcode!.code}'.substring(4)) &&
-                          {barcode!.code} != null) {
-                        widget.qrList.add('${barcode!.code}'.substring(4));
-                        toast("added " + '${barcode!.code}');
-                      }
-                    });
-                  } catch (e) {}
-                },
-                child: const Text('add'))
+            // ElevatedButton(
+            //     onPressed: () {
+            //       try {
+            //         initializeSharedPreferences(
+            //             '${barcode!.code}'.substring(4));
+            //       } catch (e) {}
+            //     },
+            //     child: const Text('ADD'))
           ],
         ),
       );
@@ -131,8 +127,7 @@ class _ScannerToDeliverState extends State<ScannerToDeliver> {
               Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => DeliverCylinder(
-                            qrList: widget.qrList,
+                      builder: (context) => AddCylinder(
                             accessToken: widget.accessToken,
                           )));
             },
@@ -207,11 +202,14 @@ class _ScannerToDeliverState extends State<ScannerToDeliver> {
               Divider(),
               ElevatedButton(
                   onPressed: () {
+                    try {
+                      initializeSharedPreferences(
+                          '${barcode!.code}'.substring(4));
+                    } catch (e) {}
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => DeliverCylinder(
-                                  qrList: widget.qrList,
+                            builder: (context) => AddCylinder(
                                   accessToken: widget.accessToken,
                                 )));
                   },

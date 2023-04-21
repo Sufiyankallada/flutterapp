@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:oru_app/screens/homepage.dart';
 
 TextField reusableTextField(String text, IconData icon, bool isPassword,
@@ -106,33 +107,6 @@ Container buttons(BuildContext context, String text, Function onTap) {
   );
 }
 
-Container Kbutton(String text, Function onTap()) {
-  return Container(
-    color: Colors.white,
-    width: double.infinity,
-    padding: const EdgeInsets.fromLTRB(50, 10, 50, 1),
-    child: ElevatedButton(
-      onPressed: () {
-        onTap();
-      },
-      style: ButtonStyle(
-          minimumSize: MaterialStateProperty.all(Size.fromHeight(45)),
-          backgroundColor: MaterialStateProperty.resolveWith((states) {
-            if (states.contains(MaterialState.pressed)) {
-              return Colors.black45;
-            }
-            return Colors.black;
-          }),
-          shape: MaterialStateProperty.all(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          )),
-      child: Text(text),
-    ),
-  );
-}
-
 Card GB(String text, IconData iconss, Function() onTap) {
   return Card(
     elevation: 3,
@@ -143,5 +117,130 @@ Card GB(String text, IconData iconss, Function() onTap) {
         onPressed: () {
           onTap();
         }),
+  );
+}
+
+TextField reusableTextField2(
+    String text, IconData icon, TextEditingController controller) {
+  return TextField(
+    controller: controller,
+    cursorColor: Colors.black,
+    style: TextStyle(color: Colors.black.withOpacity(0.9)),
+    decoration: InputDecoration(
+      prefixIcon: Icon(
+        icon,
+        color: Colors.black87,
+      ),
+      hintText: text,
+      labelStyle: TextStyle(
+        color: Colors.black.withOpacity(0.9),
+      ),
+      filled: true,
+      floatingLabelBehavior: FloatingLabelBehavior.never,
+      fillColor: Colors.white.withOpacity(0.3),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(30),
+        borderSide: const BorderSide(width: 1, style: BorderStyle.none),
+      ),
+    ),
+  );
+}
+
+TextField numberTextFeild(
+    String text, bool isPurity, TextEditingController controller) {
+  return TextField(
+    controller: controller,
+    cursorColor: Colors.black,
+    style: TextStyle(
+      color: Colors.black.withOpacity(0.9),
+    ),
+    decoration: InputDecoration(
+      hintText: text,
+      labelStyle: TextStyle(
+        color: Colors.black.withOpacity(0.9),
+      ),
+      filled: true,
+      floatingLabelBehavior: FloatingLabelBehavior.never,
+      fillColor: Colors.white.withOpacity(0.3),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(30),
+        borderSide: const BorderSide(width: 1, style: BorderStyle.none),
+      ),
+    ),
+    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+    inputFormatters: [
+      FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+      // Restrict input to 0 to 100
+      isPurity
+          ? TextInputFormatter.withFunction((oldValue, newValue) {
+              final double? parsedValue = double.tryParse(newValue.text);
+              if (parsedValue != null) {
+                if (parsedValue < 0) {
+                  return oldValue.copyWith(text: '0');
+                } else if (parsedValue > 100) {
+                  return oldValue.copyWith(text: '100');
+                }
+              }
+              return newValue;
+            })
+          : TextInputFormatter.withFunction((oldValue, newValue) {
+              final double? parsedValue = double.tryParse(newValue.text);
+
+              return newValue;
+            }),
+    ],
+  );
+}
+
+TextField numberTextFeildWithIcon(String text, bool isPurity,
+    TextEditingController controller, IconData icon) {
+  return TextField(
+    controller: controller,
+    cursorColor: Colors.black,
+    style: TextStyle(
+      color: Colors.black.withOpacity(0.9),
+    ),
+    decoration: InputDecoration(
+      prefixIcon: Icon(
+        icon,
+        color: Colors.black87,
+      ),
+      hintText: text,
+      labelStyle: TextStyle(
+        color: Colors.black.withOpacity(0.9),
+      ),
+      filled: true,
+      floatingLabelBehavior: FloatingLabelBehavior.never,
+      fillColor: Colors.white.withOpacity(0.3),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(30),
+        borderSide: const BorderSide(
+          width: 1,
+          style: BorderStyle.none,
+        ),
+      ),
+    ),
+    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+    inputFormatters: [
+      FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+      // Restrict input to 0 to 100
+      isPurity
+          ? TextInputFormatter.withFunction((oldValue, newValue) {
+              final double? parsedValue = double.tryParse(newValue.text);
+              if (parsedValue != null) {
+                if (parsedValue < 0) {
+                  return oldValue.copyWith(text: '0');
+                } else if (parsedValue > 100) {
+                  return oldValue.copyWith(text: '100');
+                }
+              }
+              return newValue;
+            })
+          : TextInputFormatter.withFunction((oldValue, newValue) {
+              final double? parsedValue = double.tryParse(newValue.text);
+
+              return newValue;
+            }),
+    ],
   );
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:oru_app/functions.dart';
 import 'package:oru_app/reusables.dart';
+import 'package:oru_app/screens/addcylinders.dart';
 import 'package:oru_app/screens/collectcylinders.dart';
 import 'package:oru_app/screens/delivercylinder.dart';
 
@@ -12,6 +13,9 @@ import '../drawer1.dart';
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'addcustomer.dart';
 
 class HomePage extends StatefulWidget {
   String access_token;
@@ -22,6 +26,20 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  Future<void> getSharedPref() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      name = prefs.getString('name');
+    });
+  }
+
+  String? name = "";
+  @override
+  void initState() {
+    super.initState();
+    getSharedPref();
+  }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -30,26 +48,34 @@ class _HomePageState extends State<HomePage> {
     //change item hieght to change the hieght of grid
     final double itemHeight = (size.height - kToolbarHeight - 24) / 3.2;
     final double itemWidth = size.width / 2;
+
     return WillPopScope(
       onWillPop: () => _onBackButtonPressed(context),
       child: Scaffold(
         backgroundColor: Color.fromARGB(255, 255, 255, 255),
         appBar: AppBar(
+          // flexibleSpace: Container(
+          //   height: 50,
+          //   width: 50,
+          //   margin: EdgeInsets.fromLTRB(48, 35, 227, 0),
+          //   decoration: const BoxDecoration(
+          //     image: DecorationImage(
+          //       image: AssetImage('images/socerp.png'),
+          //       fit: BoxFit.fill,
+          //     ),
+          //   ),
+          // ),
+          title: Text("GROWLINE"),
+          backgroundColor: Color.fromARGB(255, 63, 93, 118),
           iconTheme: IconThemeData(color: Colors.black),
           elevation: 0.9,
-          backgroundColor: Color.fromARGB(255, 73, 183, 202),
-          title: const Text('Day Scholars',
-              style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 18)),
           actions: <Widget>[
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: const [
-                Text('Data Entry',
+              children: [
+                Text(name!,
                     style: TextStyle(
-                        color: Colors.black87,
+                        color: Colors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 14)),
               ],
@@ -64,59 +90,71 @@ class _HomePageState extends State<HomePage> {
                 )),
           ],
         ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Expanded(
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 16),
-                child: GridView.count(
-                  crossAxisCount: 2,
-                  childAspectRatio: (itemWidth / itemHeight),
-                  mainAxisSpacing: 8,
-                  crossAxisSpacing: 8,
-                  children: [
-                    GB("Fill Cylinders", Icons.add_circle_outline, () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => FillCylinders(
+        body: Padding(
+          padding: const EdgeInsets.all(13),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Expanded(
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  child: GridView.count(
+                    crossAxisCount: 2,
+                    childAspectRatio: (itemWidth / itemHeight),
+                    mainAxisSpacing: 8,
+                    crossAxisSpacing: 8,
+                    children: [
+                      GB("Fill Cylinders", Icons.add_circle_outline, () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => FillCylinders(
+                                      qrList: [],
+                                      accessToken: widget.access_token,
+                                    )));
+                      }),
+                      GB("Deliver Cylinders", Icons.delivery_dining, () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => DeliverCylinder(
                                     qrList: [],
-                                    accessToken: widget.access_token,
-                                  )));
-                    }),
-                    GB("Deliver Cylinders", Icons.delivery_dining, () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => DeliverCylinder(
-                                  qrList: [],
-                                  accessToken: widget.access_token)));
-                    }),
-                    GB("Pickup", Icons.directions_bike, () {}),
-                    GB("Collect", Icons.local_shipping, () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => CollectCylinder(
-                                    accessToken: widget.access_token,
-                                    qrList: [],
-                                  )));
-                    }),
-                    GB("Manual", Icons.person, () {}),
-                    GB("Add New Cylinder", Icons.add, () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => FillCylinders(
-                                  qrList: [],
-                                  accessToken: widget.access_token)));
-                    }),
-                  ],
+                                    accessToken: widget.access_token)));
+                      }),
+                      GB("Pickup", Icons.directions_bike, () {}),
+                      GB("Collect", Icons.local_shipping, () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CollectCylinder(
+                                      accessToken: widget.access_token,
+                                      qrList: [],
+                                    )));
+                      }),
+                      (name == "Growline")
+                          ? GB("Add Customer", Icons.person, () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Addcustomer(
+                                          accessToken: widget.access_token)));
+                            })
+                          : Text(""),
+                      (name == "Growline")
+                          ? GB("Add New Cylinder", Icons.add, () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => AddCylinder(
+                                          accessToken: widget.access_token)));
+                            })
+                          : Text(""),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         drawer: buildDrawer(context),
       ),

@@ -61,8 +61,7 @@ class _DeliverMannually extends State<DeliverMannually> {
         padding: const EdgeInsets.all(20),
         child: ListView(
           children: [
-            reusableTextField(
-                "Cylinder Number", Icons.arrow_right, false, cylinderNumber),
+            numberTextFeild("Cylinder Number", false, cylinderNumber),
             const SizedBox(
               height: 30,
             ),

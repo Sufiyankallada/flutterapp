@@ -4,6 +4,7 @@ import 'package:oru_app/screens/loginpage.dart';
 
 Drawer buildDrawer(BuildContext context) {
   return Drawer(
+    backgroundColor: Color.fromARGB(255, 206, 221, 234),
     // Add a ListView to the drawer. This ensures the user can scroll
     // through the options in the drawer if there isn't enough vertical
     // space to fit everything.
@@ -13,9 +14,14 @@ Drawer buildDrawer(BuildContext context) {
       children: [
         const DrawerHeader(
           decoration: BoxDecoration(
-            color: Color.fromARGB(255, 90, 169, 183),
+            // image: DecorationImage(
+            //     image: AssetImage('images/socerp.png'), opacity: 100),
+            color: Color.fromARGB(255, 89, 121, 147),
           ),
-          child: Text('Drawer Header'),
+          child: Text(
+            'GROWLINE',
+            style: TextStyle(color: Colors.white, fontSize: 30),
+          ),
         ),
         Card(
           elevation: 0.5,
