@@ -109,7 +109,8 @@ class _HomePageState extends State<HomePage> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => FillCylinders(
-                                      qrList: [],
+                                      cylinderIds: [],
+                                      cylinders: [],
                                       accessToken: widget.access_token,
                                     )));
                       }),
@@ -118,18 +119,19 @@ class _HomePageState extends State<HomePage> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => DeliverCylinder(
-                                    qrList: [],
+                                    cylinderIds: [],
+                                    cylinders: [],
                                     accessToken: widget.access_token)));
                       }),
-                      GB("Pickup", Icons.directions_bike, () {}),
+                      GB("Manual", Icons.account_balance_wallet_rounded, () {}),
                       GB("Collect", Icons.local_shipping, () {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => CollectCylinder(
-                                      accessToken: widget.access_token,
-                                      qrList: [],
-                                    )));
+                                    cylinderIds: [],
+                                    cylinders: [],
+                                    accessToken: widget.access_token)));
                       }),
                       (name == "Growline")
                           ? GB("Add Customer", Icons.person, () {

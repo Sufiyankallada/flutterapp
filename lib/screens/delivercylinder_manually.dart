@@ -2,7 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:oru_app/screens/fillcylinders.dart';
+import 'package:oru_app/screens/delivercylinder.dart';
+
 import 'package:oru_app/functions.dart';
 
 import 'package:oru_app/reusables.dart';
@@ -51,14 +52,14 @@ class _DeliverMannually extends State<DeliverMannually> {
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.black),
-        backgroundColor: Color.fromARGB(255, 73, 183, 202),
+        backgroundColor: Color.fromARGB(255, 63, 93, 118),
         title: const Text(
           "Deliver Cylinders manually",
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.white),
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.fromLTRB(25, 50, 25, 50),
         child: ListView(
           children: [
             numberTextFeild("Cylinder Number", false, cylinderNumber),
@@ -69,7 +70,11 @@ class _DeliverMannually extends State<DeliverMannually> {
               textFieldConfiguration: TextFieldConfiguration(
                   decoration: InputDecoration(
                     hintText: dropDownvalueCylinder,
-                    border: OutlineInputBorder(),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      borderSide:
+                          const BorderSide(width: 1, style: BorderStyle.none),
+                    ),
                     labelText: "Cylinder Types",
                   ),
                   controller: cylinderController),
@@ -98,7 +103,11 @@ class _DeliverMannually extends State<DeliverMannually> {
               textFieldConfiguration: TextFieldConfiguration(
                   decoration: InputDecoration(
                     hintText: dropDownvalueCustomer,
-                    border: OutlineInputBorder(),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      borderSide:
+                          const BorderSide(width: 1, style: BorderStyle.none),
+                    ),
                     labelText: "Customer",
                   ),
                   controller: customerController),
@@ -204,8 +213,10 @@ class _DeliverMannually extends State<DeliverMannually> {
               Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => FillCylinders(
-                          qrList: [], accessToken: widget.accessToken)));
+                      builder: (context) => DeliverCylinder(
+                          cylinders: [],
+                          cylinderIds: [],
+                          accessToken: widget.accessToken)));
             }),
           ],
         ),

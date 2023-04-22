@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -8,12 +10,17 @@ import 'package:oru_app/screens/homepage.dart';
 import 'package:oru_app/Scanners/scanner_to_fill.dart';
 import 'package:http/http.dart' as http;
 
+// ignore: must_be_immutable
 class FillCylinders extends StatefulWidget {
-  List qrList;
-
+  List cylinderIds;
+  List cylinders;
   String accessToken;
 
-  FillCylinders({Key? mykey, required this.qrList, required this.accessToken})
+  FillCylinders(
+      {Key? mykey,
+      required this.cylinderIds,
+      required this.accessToken,
+      required this.cylinders})
       : super(key: mykey);
 
   @override
@@ -21,20 +28,17 @@ class FillCylinders extends StatefulWidget {
 }
 
 class _FillCylindersState extends State<FillCylinders> {
-  List cylinderId = [];
-  bool flag = false;
-  bool cancel = false;
-  List invalidCylinders = [];
+  TextEditingController purity = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 73, 183, 202),
+        backgroundColor: Color.fromARGB(255, 63, 93, 118),
         title: const Text(
           'Fill Cylinders',
           style: TextStyle(
-              color: Colors.black,
+              color: Colors.white,
               fontWeight: FontWeight.bold,
               letterSpacing: 0.4),
         ),
@@ -55,7 +59,7 @@ class _FillCylindersState extends State<FillCylinders> {
         ),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.fromLTRB(25, 50, 25, 50),
         children: [
           IconButton(
               onPressed: () {
@@ -64,7 +68,8 @@ class _FillCylindersState extends State<FillCylinders> {
                     MaterialPageRoute(
                         builder: (context) => Scanner(
                               accessToken: widget.accessToken,
-                              qrList: widget.qrList,
+                              cylinderIDs: widget.cylinderIds,
+                              cylinders: widget.cylinders,
                             )));
               },
               icon: const Icon(
@@ -72,6 +77,14 @@ class _FillCylindersState extends State<FillCylinders> {
                 size: 50,
               ),
               alignment: Alignment.topCenter),
+          const SizedBox(
+            height: 50,
+          ),
+          const Text(
+            "   Purity",
+            style: TextStyle(fontSize: 17),
+          ),
+          numberTextFeild("0 to 100", true, purity),
 
           const SizedBox(
             height: 30,
@@ -81,24 +94,21 @@ class _FillCylindersState extends State<FillCylinders> {
           ListView.builder(
               scrollDirection: Axis.vertical,
               shrinkWrap: true,
-              itemCount: widget.qrList.length,
+              itemCount: widget.cylinders.length,
               itemBuilder: (context, index) {
                 return Column(
                   children: [
                     Card(
                       elevation: 2,
                       child: ListTile(
-                        title: Text(widget.qrList[index]),
-                        subtitle: Text((index + 1).toString()),
+                        title: Text(widget.cylinders[index][0]),
+                        subtitle: Text(widget.cylinders[index][1]),
                         tileColor: Colors.white70,
                         trailing: GestureDetector(
                           onTap: () {
                             setState(() {
-                              if (invalidCylinders
-                                  .contains(widget.qrList[index])) {
-                                invalidCylinders.remove(widget.qrList[index]);
-                              }
-                              widget.qrList.removeAt(index);
+                              widget.cylinders.removeAt(index);
+                              widget.cylinderIds.removeAt(index);
                             });
                           },
                           child: Icon(
@@ -117,26 +127,23 @@ class _FillCylindersState extends State<FillCylinders> {
               }),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color.fromARGB(255, 63, 93, 118),
-              minimumSize: Size(80, 40),
+              backgroundColor: const Color.fromARGB(255, 63, 93, 118),
+              minimumSize: const Size(80, 40),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(
                     20.0), // Set the radius to create a rounded button
               ),
             ),
             onPressed: () {
-              update();
-              if (flag) {
-                toast("some QR codes are not valid");
+              if (widget.cylinders.isEmpty) {
+                toast("Scan QR code");
+              } else {
+                if (purity.text == "") {
+                  toast("Enter purity");
+                } else {
+                  _showConfirmationDialog();
+                }
               }
-              flag = false;
-
-              if (widget.qrList.isEmpty) {
-                setState(() {
-                  cancel = false;
-                });
-              }
-              if (widget.qrList.isNotEmpty) _showConfirmationDialog();
             },
             child: const Text(
               "Submit",
@@ -146,9 +153,9 @@ class _FillCylindersState extends State<FillCylinders> {
           const SizedBox(
             height: 20,
           ),
-          Divider(thickness: 1),
+          const Divider(thickness: 1),
 
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           buttons(context, "Manual Entries", () {
@@ -163,40 +170,6 @@ class _FillCylindersState extends State<FillCylinders> {
         ],
       ),
     );
-  }
-
-  void update() {
-    for (int i = 0; i < widget.qrList.length; i++) {
-      fetchCylinderByQr(widget.qrList[i]);
-    }
-    setState(() {
-      cancel = true;
-    });
-  }
-
-  Future fetchCylinderByQr(String qrId) async {
-    String url = 'http://soc-erp.showcase.code7.in/api/cylinder/qr';
-    url += '?qr_id=$qrId';
-    final token = widget.accessToken;
-    http.Response response = await http.get(Uri.parse(url), headers: {
-      'Authorization': 'Bearer $token',
-      'Content-Type': 'application/json',
-    });
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      if (!cylinderId.contains(data["cylinder"]["id"])) {
-        setState(() {
-          cylinderId.add(data["cylinder"]["id"]);
-        });
-      }
-    } else {
-      if (!invalidCylinders.contains(qrId)) {
-        setState(() {
-          invalidCylinders.add(qrId);
-        });
-      }
-      flag = true;
-    }
   }
 
   void makePostRequestToFill(
@@ -220,9 +193,6 @@ class _FillCylindersState extends State<FillCylinders> {
         toast("Error");
       } else {
         toast("submitted");
-        setState(() {
-          cancel = false;
-        });
       }
     }
   }
@@ -238,31 +208,19 @@ class _FillCylindersState extends State<FillCylinders> {
             TextButton(
               child: Text('Cancel'),
               onPressed: () {
-                setState(() {
-                  cylinderId.clear();
-                });
-
                 Navigator.pop(context);
               },
             ),
             TextButton(
               child: const Text('Proceed'),
               onPressed: () {
-                if (flag) {
-                  toast("some QR codes are not valid");
-                }
-                makePostRequestToFill(widget.accessToken, cylinderId, 40);
+                makePostRequestToFill(widget.accessToken, widget.cylinderIds,
+                    int.parse(purity.text));
+                purity.clear();
 
-                flag = false;
-                cylinderId.clear();
-                if (widget.qrList.isEmpty) {
-                  setState(() {
-                    cancel = false;
-                  });
-                }
                 setState(() {
-                  widget.qrList.clear();
-                  widget.qrList.addAll(invalidCylinders);
+                  widget.cylinders.clear();
+                  widget.cylinderIds.clear();
                 });
 
                 Navigator.of(context).pop();

@@ -28,11 +28,11 @@ class _AddcustomerState extends State<Addcustomer> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Color.fromARGB(255, 73, 183, 202),
+          backgroundColor: Color.fromARGB(255, 63, 93, 118),
           title: const Text(
             'Add Customers',
             style: TextStyle(
-                color: Colors.black,
+                color: Colors.white,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 0.4),
           ),
@@ -53,7 +53,7 @@ class _AddcustomerState extends State<Addcustomer> {
           ),
         ),
         body: SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(10, 25, 10, 10),
+          padding: EdgeInsets.fromLTRB(25, 50, 25, 50),
           child: Column(
             children: [
               // Container(

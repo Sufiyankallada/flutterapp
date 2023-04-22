@@ -1,26 +1,63 @@
+import 'dart:convert';
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:oru_app/functions.dart';
+import 'package:oru_app/screens/collectcylinders.dart';
+import 'package:oru_app/screens/delivercylinder.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import '../screens/collectcylinders.dart';
-import '../screens/fillcylinders.dart';
+
 import 'package:flutter_beep/flutter_beep.dart';
+import 'package:http/http.dart' as http;
 
 class ScannerToCollect extends StatefulWidget {
-  List qrList;
+  List cylinderIDs;
+  List cylinders;
   String accessToken;
+
   ScannerToCollect(
-      {Key? mykey, required this.qrList, required this.accessToken})
+      {Key? mykey,
+      required this.cylinderIDs,
+      required this.cylinders,
+      required this.accessToken})
       : super(key: mykey);
 
   @override
-  State<ScannerToCollect> createState() => _ScannerToCollectState();
+  State<ScannerToCollect> createState() => _ScannerToCollect();
 }
 
-class _ScannerToCollectState extends State<ScannerToCollect> {
+class _ScannerToCollect extends State<ScannerToCollect> {
+  Future<void> getCylinderData(int qrId, String accessToken) async {
+    String url = 'http://soc-erp.showcase.code7.in/api/cylinder/qr';
+    url += '?qr_id=$qrId';
+    final token = widget.accessToken;
+    try {
+      http.Response response = await http.get(Uri.parse(url), headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      });
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        setState(() {
+          cylinderID = data['cylinder']["id"];
+          cylinderNumber = data['cylinder']["number"];
+          cylindreType = data['cylinder']["type"];
+        });
+      } else {
+        toast("QR code not valid");
+      }
+    } catch (e) {
+      toast("check internet connectivity");
+    }
+  }
+
   final qrKey = GlobalKey(debugLabel: 'QR');
   Barcode? barcode;
+  int cylinderID = 0;
+  String cylinderNumber = "";
+  String cylindreType = "";
 
   QRViewController? controller;
   @override
@@ -41,10 +78,24 @@ class _ScannerToCollectState extends State<ScannerToCollect> {
 
   Widget buidResult() => Container(
       padding: const EdgeInsets.all(10),
-      decoration: const BoxDecoration(color: Colors.lightGreen),
-      child: Text(
-        barcode != null ? 'RESULT :${barcode!.code}' : 'Scan a QR fCode',
-        maxLines: 3,
+      decoration:
+          const BoxDecoration(color: Color.fromARGB(255, 252, 255, 248)),
+      child: Column(
+        children: [
+          Text(
+            cylinderNumber,
+            style: TextStyle(fontSize: 25, fontWeight: FontWeight.normal),
+            maxLines: 3,
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Text(
+            cylindreType,
+            style: TextStyle(fontSize: 20),
+            maxLines: 3,
+          ),
+        ],
       ));
 
   Widget addButton() => Container(
@@ -58,14 +109,14 @@ class _ScannerToCollectState extends State<ScannerToCollect> {
                 onPressed: () {
                   try {
                     setState(() {
-                      if (widget.qrList
-                          .contains('${barcode!.code}'.substring(4))) {
-                        toast('${barcode!.code}' + " is already added");
-                      } else if (!widget.qrList
-                              .contains('${barcode!.code}'.substring(4)) &&
-                          {barcode!.code} != null) {
-                        widget.qrList.add('${barcode!.code}'.substring(4));
-                        toast("added " + '${barcode!.code}');
+                      if (widget.cylinderIDs.contains(cylinderID)) {
+                        toast(
+                            "$cylinderNumber - $cylindreType \n is already added");
+                      } else if (cylinderID != 0) {
+                        widget.cylinderIDs.add(cylinderID);
+                        widget.cylinders.add([cylinderNumber, cylindreType]);
+
+                        toast("added  $cylinderNumber");
                       }
                     });
                   } catch (e) {}
@@ -104,15 +155,21 @@ class _ScannerToCollectState extends State<ScannerToCollect> {
       if (lastScanned?.code != barcode.code) {
         lastScanned = barcode;
         setState(() => this.barcode = barcode);
+
+        //API
+
+        getCylinderData(
+            int.parse('${barcode.code}'.substring(4)), widget.accessToken);
+
         FlutterBeep.playSysSound(41);
-        Fluttertoast.showToast(
-            msg: "Scanned: ${barcode.code}",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        // Fluttertoast.showToast(
+        //     msg: "Scanned: ${barcode.code}",
+        //     toastLength: Toast.LENGTH_SHORT,
+        //     gravity: ToastGravity.BOTTOM,
+        //     timeInSecForIosWeb: 1,
+        //     backgroundColor: Colors.black,
+        //     textColor: Colors.white,
+        //     fontSize: 16.0);
       }
     });
   }
@@ -123,7 +180,7 @@ class _ScannerToCollectState extends State<ScannerToCollect> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
-          title: const Text('Scan Cylinders',
+          title: const Text('Scan Cylinders to collect',
               style: TextStyle(color: Colors.black)),
           automaticallyImplyLeading: false,
           leading: IconButton(
@@ -132,7 +189,8 @@ class _ScannerToCollectState extends State<ScannerToCollect> {
                   context,
                   MaterialPageRoute(
                       builder: (context) => CollectCylinder(
-                            qrList: widget.qrList,
+                            cylinderIds: widget.cylinderIDs,
+                            cylinders: widget.cylinders,
                             accessToken: widget.accessToken,
                           )));
             },
@@ -158,22 +216,22 @@ class _ScannerToCollectState extends State<ScannerToCollect> {
                 setState(() {});
               },
             ),
-            IconButton(
-              color: Colors.black,
-              icon: FutureBuilder(
-                  future: controller?.getCameraInfo(),
-                  builder: (context, snapshot) {
-                    if (snapshot.data != null) {
-                      return const Icon(Icons.switch_camera_rounded);
-                    } else {
-                      return Container();
-                    }
-                  }),
-              onPressed: () async {
-                await controller?.flipCamera();
-                setState(() {});
-              },
-            )
+            // IconButton(
+            //   color: Colors.black,
+            //   icon: FutureBuilder(
+            //       future: controller?.getCameraInfo(),
+            //       builder: (context, snapshot) {
+            //         if (snapshot.data != null) {
+            //           return const Icon(Icons.switch_camera_rounded);
+            //         } else {
+            //           return Container();
+            //         }
+            //       }),
+            //   onPressed: () async {
+            //     await controller?.flipCamera();
+            //     setState(() {});
+            //   },
+            // )
           ],
         ),
         body: Container(
@@ -198,7 +256,7 @@ class _ScannerToCollectState extends State<ScannerToCollect> {
                   body: Stack(
                     alignment: Alignment.center,
                     children: <Widget>[
-                      Positioned(bottom: 90, child: buidResult()),
+                      Positioned(bottom: 70, child: buidResult()),
                       Positioned(bottom: 10, child: addButton()),
                     ],
                   ),
@@ -211,14 +269,15 @@ class _ScannerToCollectState extends State<ScannerToCollect> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => CollectCylinder(
-                                  qrList: widget.qrList,
+                                  cylinderIds: widget.cylinderIDs,
+                                  cylinders: widget.cylinders,
                                   accessToken: widget.accessToken,
                                 )));
                   },
                   child: Text("Submit")),
               SizedBox(
                 height: 10,
-              )
+              ),
             ],
           ),
         ),

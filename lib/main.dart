@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:oru_app/screens/homepage.dart';
 
 import 'screens/loginpage.dart';
 

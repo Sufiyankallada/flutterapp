@@ -1,24 +1,30 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:oru_app/Scanners/scanner_to_collect.dart';
+
 import 'package:oru_app/reusables.dart';
-import 'package:oru_app/screens/collectcylinders_mannually.dart';
 
 import 'package:oru_app/functions.dart';
+import 'package:oru_app/screens/collectcylinders_mannually.dart';
+
 import 'package:oru_app/screens/homepage.dart';
 
 import 'package:http/http.dart' as http;
-import 'package:oru_app/Scanners/scanner_to_collect.dart';
-
-String dropDownvalueCustomer = "Select Customer";
 
 class CollectCylinder extends StatefulWidget {
-  List qrList;
-
+  List cylinderIds;
+  List cylinders;
   String accessToken;
 
-  CollectCylinder({Key? mykey, required this.qrList, required this.accessToken})
+  CollectCylinder(
+      {Key? mykey,
+      required this.cylinderIds,
+      required this.cylinders,
+      required this.accessToken})
       : super(key: mykey);
 
   @override
@@ -26,16 +32,12 @@ class CollectCylinder extends StatefulWidget {
 }
 
 class _CollectCylinder extends State<CollectCylinder> {
-  List cylinderId = [];
-  bool flag = false;
-  bool cancel = false;
-  List invalidCylinders = [];
-
-  String dropDownvalueCustomer = "Select Customer";
+  String dropDownvalueCustomer = "";
 
   TextEditingController customerController = TextEditingController();
   List<String> customerNames = [];
   List customerIDs = [];
+  int customerId = 0;
 
   @override
   void initState() {
@@ -48,11 +50,11 @@ class _CollectCylinder extends State<CollectCylinder> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 73, 183, 202),
+        backgroundColor: Color.fromARGB(255, 63, 93, 118),
         title: const Text(
           'Collect Cylinders',
           style: TextStyle(
-              color: Colors.black,
+              color: Colors.white,
               fontWeight: FontWeight.bold,
               letterSpacing: 0.4),
         ),
@@ -82,7 +84,8 @@ class _CollectCylinder extends State<CollectCylinder> {
                     MaterialPageRoute(
                         builder: (context) => ScannerToCollect(
                               accessToken: widget.accessToken,
-                              qrList: widget.qrList,
+                              cylinderIDs: widget.cylinderIds,
+                              cylinders: widget.cylinders,
                             )));
               },
               icon: const Icon(
@@ -101,7 +104,11 @@ class _CollectCylinder extends State<CollectCylinder> {
             textFieldConfiguration: TextFieldConfiguration(
                 decoration: InputDecoration(
                   hintText: dropDownvalueCustomer,
-                  border: OutlineInputBorder(),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide:
+                        const BorderSide(width: 1, style: BorderStyle.none),
+                  ),
                   labelText: "Customer",
                 ),
                 controller: customerController),
@@ -131,20 +138,21 @@ class _CollectCylinder extends State<CollectCylinder> {
           ListView.builder(
               scrollDirection: Axis.vertical,
               shrinkWrap: true,
-              itemCount: widget.qrList.length,
+              itemCount: widget.cylinderIds.length,
               itemBuilder: (context, index) {
                 return Column(
                   children: [
                     Card(
                       elevation: 2,
                       child: ListTile(
-                        title: Text(widget.qrList[index]),
-                        subtitle: Text((index + 1).toString()),
+                        title: Text(widget.cylinders[index][0]),
+                        subtitle: Text(widget.cylinders[index][1]),
                         tileColor: Colors.white70,
                         trailing: GestureDetector(
                           onTap: () {
                             setState(() {
-                              widget.qrList.removeAt(index);
+                              widget.cylinderIds.removeAt(index);
+                              widget.cylinders.removeAt(index);
                             });
                           },
                           child: Icon(
@@ -166,18 +174,17 @@ class _CollectCylinder extends State<CollectCylinder> {
           ),
 
           buttons(context, "Submit", () {
-            update();
-            if (flag) {
-              toast("some QR codes are not valid");
-            }
-            flag = false;
-
-            if (widget.qrList.isEmpty) {
+            if (widget.cylinderIds.isEmpty) {
+              toast("Scan cylinders");
+            } else if (dropDownvalueCustomer == "") {
+              toast("Select customer");
+            } else {
               setState(() {
-                cancel = false;
+                customerId =
+                    customerIDs[customerNames.indexOf(dropDownvalueCustomer)];
               });
+              _showConfirmationDialog();
             }
-            if (widget.qrList.isNotEmpty) _showConfirmationDialog();
           }),
           const SizedBox(
             height: 20,
@@ -195,54 +202,19 @@ class _CollectCylinder extends State<CollectCylinder> {
                         accessToken: widget.accessToken,
                       )),
             );
-          }),
+          })
         ],
       ),
     );
   }
 
-  void update() {
-    for (int i = 0; i < widget.qrList.length; i++) {
-      fetchCylinderByQr(widget.qrList[i]);
-    }
-    setState(() {
-      cancel = true;
-    });
-  }
-
-  Future fetchCylinderByQr(String qrId) async {
-    String url = 'http://soc-erp.showcase.code7.in/api/cylinder/qr';
-    url += '?qr_id=$qrId';
-    final token = widget.accessToken;
-    http.Response response = await http.get(Uri.parse(url), headers: {
-      'Authorization': 'Bearer $token',
-      'Content-Type': 'application/json',
-    });
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      if (!cylinderId.contains(data["cylinder"]["id"])) {
-        setState(() {
-          cylinderId.add(data["cylinder"]["id"]);
-        });
-      }
-    } else {
-      if (!invalidCylinders.contains(qrId)) {
-        setState(() {
-          invalidCylinders.add(qrId);
-        });
-      }
-      flag = true;
-    }
-  }
-
-  void makePostRequestToCollect(
-      String accessToken, List cylinderId, int customer) async {
-    if (!cylinderId.isEmpty) {
+  void makePostRequestToDeliver(String accessToken, int customer) async {
+    if (widget.cylinderIds.isNotEmpty) {
       var url = Uri.parse('http://soc-erp.showcase.code7.in/api/collect');
 
       var requestBody = jsonEncode({
         "customer": customer,
-        "cylinders": cylinderId,
+        "cylinders": widget.cylinderIds,
         "manual-cylinders": [],
         "remarks": "string"
       });
@@ -256,9 +228,6 @@ class _CollectCylinder extends State<CollectCylinder> {
         toast("Error");
       } else {
         toast("submitted");
-        setState(() {
-          cancel = false;
-        });
       }
     }
   }
@@ -274,31 +243,19 @@ class _CollectCylinder extends State<CollectCylinder> {
             TextButton(
               child: Text('Cancel'),
               onPressed: () {
-                setState(() {
-                  cylinderId.clear();
-                });
-
                 Navigator.pop(context);
               },
             ),
             TextButton(
               child: const Text('Proceed'),
               onPressed: () {
-                if (flag) {
-                  toast("some QR codes are not valid");
-                }
-                makePostRequestToCollect(widget.accessToken, cylinderId, 176);
+                makePostRequestToDeliver(widget.accessToken, customerId);
 
-                flag = false;
-                cylinderId.clear();
-                if (widget.qrList.isEmpty) {
-                  setState(() {
-                    cancel = false;
-                  });
-                }
                 setState(() {
-                  widget.qrList.clear();
-                  widget.qrList.addAll(invalidCylinders);
+                  widget.cylinderIds.clear();
+                  widget.cylinders.clear();
+                  dropDownvalueCustomer = "";
+                  customerController.clear();
                 });
 
                 Navigator.of(context).pop();
